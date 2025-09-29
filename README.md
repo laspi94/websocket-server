@@ -1,4 +1,4 @@
-# CS2 WebSocket Server
+# WebSocket Server
 
 Servidor WebSocket para comunicación en tiempo real con soporte de autenticación y canales múltiples. Este README describe cómo interactuar con el servidor y las propiedades requeridas para cada tipo de evento.
 
