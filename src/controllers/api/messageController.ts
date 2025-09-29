@@ -1,18 +1,18 @@
 import { type Request, type Response } from 'express';
 import { LogController } from '../logController';
 
-const ChatController = {
+class MessageController {
     /**
      * Obtiene chat desde logs por serverId
      */
-    getByChannel: async (req: Request, res: Response) => {
+    async getByChannel(req: Request, res: Response) {
         try {
             const channel: string = req.query.channel as string || '';
-            const chat = LogController.getMessagesFromFile(channel);
+            const messages = LogController.getMessagesFromFile(channel);
 
-            res.json(chat);
+            res.json(messages);
         } catch (error) {
-            console.error('ChatController exception:', error);
+            console.error('MessageController exception:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error getting channel message history'
@@ -21,6 +21,4 @@ const ChatController = {
     }
 };
 
-export {
-    ChatController
-}
+export const messageController = new MessageController();

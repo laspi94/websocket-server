@@ -1,2 +1,2 @@
-export * from "./api/chatController";
+export * from "./api/messageController";
 export * from "./logController";

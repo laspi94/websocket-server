@@ -8,6 +8,7 @@ node_modules
 # Archivos temporales
 dist
 channels
+db
 
 # Git
 .git

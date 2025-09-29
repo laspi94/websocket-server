@@ -1,6 +1,6 @@
-import { checkApiKey } from "./checkApiKey";
+import { checkApiKey, checkJWT } from "./api";
 
 export const Middlewares = {
-    api: [checkApiKey],
+    api: [checkApiKey, checkJWT],
     web: []
 };

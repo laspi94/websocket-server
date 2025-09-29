@@ -21,9 +21,9 @@ class Logger {
             const time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`;
 
             const logEntry = {
-                Sender: event.Sender,
+                Sender: event.Sender ?? 'anonymous',
                 Message: event.Message,
-                TimeStamp: time
+                Timestamp: time
             };
 
             this.checkFileExist(filePath);

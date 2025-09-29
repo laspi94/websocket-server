@@ -1,14 +1,14 @@
-import express, { type Request, type Response } from 'express';
-import { ChatController } from '../controllers';
+import express from 'express';
+import { authController } from '../controllers/authController';
 
 export function apiRoutes() {
     const router = express.Router();
     router.use(express.json());
 
     /**
-     * Rutas para información del servidor
+     * Auth
      */
-    router.get('/channel/history', ChatController.getByChannel);
+    router.post('/login', authController.login);
 
     return router;
 }

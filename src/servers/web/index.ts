@@ -24,13 +24,8 @@ export async function startServer() {
         /**
          * Rutas API
          */
-        app.use("/api", Middlewares.api, apiRoutes());
-
-        /**
-         * Rutas de websocket de API
-         */
         const { authClients, wss, connectedClients } = await startWebSocketServer();
-        app.use("/websocket", websocketRoutes({ authClients, connectedClients }));
+        app.use("/api", Middlewares.api, [apiRoutes(), websocketRoutes({ authClients, connectedClients })]);
 
         /**
          * Iniciar servidor http
