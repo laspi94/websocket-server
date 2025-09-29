@@ -11,26 +11,25 @@ export function checkApiKey(req: Request, res: Response, next: NextFunction) {
         });
     }
 
-    next();
+    return next();
 }
 
 export function checkJWT(req: Request, res: Response, next: NextFunction) {
-    if (req.url == '/login') {
-        next();
+    if (req.url === '/login') {
+        return next();
     }
 
     const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: "No token" });
+    if (!authHeader) {
+        return res.status(401).json({ error: "No token" }); // <--- return
+    }
 
     const token = authHeader.split(" ")[1] ?? '';
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET as string);
-        // Guardar el payload en req para usarlo luego
         (req as any).user = payload;
-        next();
+        return next();
     } catch {
-        return res.status(401).json({ error: "Token inválido" });
+        return res.status(401).json({ error: "Token inválido" }); // <--- return
     }
-
-    next();
 }

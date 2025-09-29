@@ -9,7 +9,7 @@ function init() {
     const app = express();
     app.use(express.json());
     app.use(cors({
-        origin: process.env.APP_DOMAIN || "http://localhost:5173",
+        origin: process.env.FRONTEND_DOMAIN || "http://localhost:5173",
         methods: ["GET", "POST", "PUT", "DELETE"]
     }));
     return app;
