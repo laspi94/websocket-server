@@ -1,0 +1,14 @@
+# Archivos sensibles
+.env
+.env.example
+
+# Dependencias locales
+node_modules
+
+# Archivos temporales
+dist
+channels
+
+# Git
+.git
+.gitignore

@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Docker/dockerfile
+    env_file:
+      - .env
+    container_name: ${DOCKER_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - ${DOCKER_EXPOSE_PORT}:${PORT}
+      - ${DOCKER_EXPOSE_WEBSOCKET_PORT}:${WEBSOCKET_PORT}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - ./channels:/app/channels

@@ -1,0 +1,29 @@
+# Etapa de build
+FROM node:24-alpine3.21 AS builder
+
+WORKDIR /app
+
+# Copiamos solo los manifiestos primero
+COPY ../package*.json ./
+
+RUN npm install
+
+# Copiamos todo el código fuente
+COPY ../ ./
+
+# Ejecutamos build
+RUN npm run build
+
+# Etapa final (solo runtime)
+FROM node:24-alpine3.21 AS runner
+
+WORKDIR /app
+
+# Copiamos solo lo necesario desde el builder
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+
+RUN npm install --omit=dev
+
+# Arranque
+CMD ["npm", "start"]
