@@ -3,7 +3,7 @@ import { ServerConnection } from '../../types/connection';
 import { event } from '../../types/message';
 import { LogController } from '../../controllers';
 
-/** Eventos  */
+/** Eventos  de respuesta */
 const DISCONNECTED = 'disconnected';
 
 const ERROR = 'error';
@@ -12,9 +12,18 @@ const EVENT = 'event';
 
 const SUCCESS = 'success';
 
-const SUSCRIBED = 'suscribed';
+const SUBSCRIBED = 'subscribed';
 
 const WELCOME = 'welcome';
+
+/** Eventos de acciones */
+const SUBSCRIBE = 'subscribe';
+
+const AUTH = 'auth';
+
+const SEND = 'send';
+
+const PING = 'ping';
 
 async function startWebSocketServer() {
     try {
@@ -89,16 +98,16 @@ async function startWebSocketServer() {
          */
         function handleEvent(ws: WebSocket, event: event, clientIp: string | undefined) {
             switch (event.Action) {
-                case 'auth':
+                case AUTH:
                     handleAuth(ws, event, clientIp);
                     break;
-                case 'suscribe':
+                case SUBSCRIBE:
                     handleSuscribeChannel(ws, event);
                     break;
-                case 'send':
+                case SEND:
                     handleMessage(ws, event);
                     break;
-                case 'ping':
+                case PING:
                     handlePingMessage(ws);
                     break;
                 default:
@@ -199,7 +208,7 @@ async function startWebSocketServer() {
              */
             connectedClients.forEach(c => {
                 if (c.channels.has(event.Channel ?? '') && c.ws.readyState === WebSocket.OPEN && c.id !== client.id) {
-                    newEvent(c.ws, { Event: SUSCRIBED, Message: `Client ${client.id} connected`, Id: client.id });
+                    newEvent(c.ws, { Event: SUBSCRIBED, Message: `Client ${client.id} connected`, Id: client.id });
                 }
             });
 
