@@ -238,7 +238,7 @@ async function startWebSocketServer() {
 
             connectedClients.forEach(c => {
                 if (c.channels.has(event.Channel ?? '') && c.ws.readyState === WebSocket.OPEN && c.id !== client.id) {
-                    newEvent(c.ws, { Event: EVENT, Message: event.Message, Id: client.id });
+                    newEvent(c.ws, { Event: EVENT, Message: event.Message, Id: client.id, Sender: event.Sender });
                 }
             });
 
