@@ -12,6 +12,7 @@ El servidor utiliza las siguientes variables de entorno:
 |-------------------------------|-------------------------------------------------|------------------------|
 | `WEBSOCKET_PORT`       | Puerto en el que se ejecutará el servidor       | `8080`                 |
 | `WEBSOCKET_TOKEN`      | Token de autenticación para clientes            | `'your_auth_token_here'` |
+| `WEBSOCKET_LOG_MESSAGE`      | Habilita o inhabilita el registro de log por canal           | `true` |
 
 ---
 
@@ -31,7 +32,7 @@ interface ServerConnection {
 
 Los clientes pueden enviar eventos JSON al servidor con la propiedad Action para especificar la acción.
 
-1. auth – Autenticación
+### 1. auth – Autenticación
 
 Autentica al cliente con el servidor.
 
@@ -50,14 +51,14 @@ Respuestas posibles:
 + success: Autenticación correcta
 + error: Faltan propiedades o token inválido
 
-2. suscribe – Suscribirse a un canal
+### 2. subscribe – Suscribirse a un canal
 
 Permite que el cliente se suscriba a un canal específico. Un cliente puede suscribirse a múltiples canales.
 
 Propiedades requeridas:
 ```json
 {
-  "Action": "suscribe",
+  "Action": "subscribe",
   "Channel": "string"   // Nombre del canal
 }
 ```
@@ -65,9 +66,9 @@ Propiedades requeridas:
 Respuestas:
 + success: Confirmación de suscripción
 + error: Cliente no autenticado o falta el canal
-+ suscribed: Notificación a otros clientes del canal sobre la nueva suscripción
++ subscribed: Notificación a otros clientes del canal sobre la nueva suscripción
 
-3. send – Enviar un mensaje a un canal
+### 3. send – Enviar un mensaje a un canal
 
 Envía un mensaje a todos los clientes conectados que estén suscritos al mismo canal.
 
@@ -84,7 +85,7 @@ Respuestas:
 + event: Mensaje enviado a otros clientes del canal
 + error: Cliente no autenticado o no suscrito al canal
 
-4. ping – Ping de conexión
+### 4. ping – Ping de conexión
 
 Permite al cliente comprobar si la conexión sigue activa.
 
@@ -102,28 +103,29 @@ Respuesta:
 }
 ```
 
-Notificaciones desde el Servidor
+## Notificaciones desde el Servidor
 
 El servidor puede enviar notificaciones a los clientes en función de las acciones de otros usuarios:
 
-Evento	Descripción
-welcome	Mensaje enviado al conectar al servidor
-success	Confirmación de autenticación o suscripción
-error	Errores en autenticación, suscripción o envío de mensajes
-suscribed	Otro cliente se ha suscrito a un canal compartido
-event	Mensaje enviado a un canal
-disconnected	Notificación de que un cliente se desconectó
++ Evento	Descripción
++ welcome	Mensaje enviado al conectar al servidor
++ success	Confirmación de autenticación o suscripción
++ error	Errores en autenticación, suscripción o envío de mensajes
++ subscribed	Otro cliente se ha suscrito a un canal compartido
++ event	Mensaje enviado a un canal
++ disconnected	Notificación de que un cliente se desconectó
 
 Formato general del evento:
-
+```json
 {
   "Action": "string",      // Tipo de evento
   "Message": "string",     // Mensaje o información asociada
   "Channel": "string",     // Canal afectado (opcional)
-  "Id": "string",          // ID del cliente (opcional)
-  "Sender": "string",        // Nombre de jugador (opcional)
-  "Token": "string"        // Token (opcional)
+  "Id": "string",          // ID del cliente (solo autenticación)
+  "Sender": "string",      // Información adicional de la fuente (opcional)
+  "Token": "string"        // Token (solo autenticación)
 }
+```
 
 ## Flujo de Conexión
 
