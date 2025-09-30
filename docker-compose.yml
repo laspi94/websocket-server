@@ -1,5 +1,10 @@
+networks:
+  wss-network:
+    name: wss-network
+    driver: bridge
+
 services:
-  app:
+  wss-app:
     build:
       context: .
       dockerfile: docker/dockerfile
@@ -16,3 +21,5 @@ services:
     volumes:
       - ./channels:/app/channels
       - ./db:/app/db
+    networks:
+      - wss-network
