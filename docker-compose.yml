@@ -21,6 +21,5 @@ services:
     volumes:
       - ./channels:/app/channels
       - ./db:/app/db
-      - ./.env:/app/.env
     networks:
       - wss-network
