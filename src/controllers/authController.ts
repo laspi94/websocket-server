@@ -14,7 +14,8 @@ class AuthController {
 
             if (!user) return res.status(401).json({ success: false, message: "Credenciales inválidas" });
 
-            const token = jwt.sign({ email: user.email }, `${process.env.JWT_SECRET}`, { expiresIn: "1h" });
+            const expire = Number(process.env.JWT_EXPIRE) || 86400;
+            const token = jwt.sign({ email: user.email }, `${process.env.JWT_SECRET}`, { expiresIn: expire });
             return res.json({ success: true, token });
         } catch (error) {
             console.error('AuthController exception:', error);
