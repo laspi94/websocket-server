@@ -21,7 +21,7 @@ export function checkJWT(req: Request, res: Response, next: NextFunction) {
 
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).json({ error: "No token" }); // <--- return
+        return res.status(401).json({ error: "No token" });
     }
 
     const token = authHeader.split(" ")[1] ?? '';
@@ -30,6 +30,6 @@ export function checkJWT(req: Request, res: Response, next: NextFunction) {
         (req as any).user = payload;
         return next();
     } catch {
-        return res.status(401).json({ error: "Token inválido" }); // <--- return
+        return res.status(401).json({ error: "Token inválido" });
     }
 }
