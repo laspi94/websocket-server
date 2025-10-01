@@ -49,8 +49,6 @@ Propiedades requeridas:
 Respuestas posibles:
 
 + authenticated: Autenticación correcta
-+ success: Acción hecha realizada correctamente (subscripción)
-+ event: Nuevo mensaje recibido
 + error: Faltan propiedades o token inválido
 
 ### 2. subscribe – Suscribirse a un canal
