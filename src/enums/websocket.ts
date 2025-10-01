@@ -1,5 +1,6 @@
 /** Eventos de respuesta */
 export enum ResponseEvent {
+    AUTHENTICATED = "authenticated",
     DISCONNECTED = "disconnected",
     ERROR = "error",
     EVENT = "event",

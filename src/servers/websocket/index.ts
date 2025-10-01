@@ -1,8 +1,8 @@
-import WebSocket from 'ws';
-import { ServerConnection } from '../../types/connection';
 import { event } from '../../types/message';
 import { LogController } from '../../controllers';
 import { ResponseEvent, ActionEvent } from '../../enums';
+import { ServerConnection } from '../../types/connection';
+import WebSocket from 'ws';
 
 async function startWebSocketServer() {
     try {
@@ -158,7 +158,7 @@ async function startWebSocketServer() {
             authClients.set(event.Id, client);
             console.log(`Conection from ${event.Id} authenticated from ${clientIp}`);
 
-            newEvent(ws, { Event: ResponseEvent.SUCCESS, Message: 'Authentication successful' });
+            newEvent(ws, { Event: ResponseEvent.AUTHENTICATED, Message: 'Authentication successful' });
 
             connectedClients.add(client);
         }
