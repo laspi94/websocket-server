@@ -2,28 +2,7 @@ import WebSocket from 'ws';
 import { ServerConnection } from '../../types/connection';
 import { event } from '../../types/message';
 import { LogController } from '../../controllers';
-
-/** Eventos  de respuesta */
-const DISCONNECTED = 'disconnected';
-
-const ERROR = 'error';
-
-const EVENT = 'event';
-
-const SUCCESS = 'success';
-
-const SUBSCRIBED = 'subscribed';
-
-const WELCOME = 'welcome';
-
-/** Eventos de acciones */
-const SUBSCRIBE = 'subscribe';
-
-const AUTH = 'auth';
-
-const SEND = 'send';
-
-const PING = 'ping';
+import { ResponseEvent, ActionEvent } from '../../enums';
 
 async function startWebSocketServer() {
     try {
@@ -69,7 +48,7 @@ async function startWebSocketServer() {
                     handleEvent(ws, message, clientIp);
                 } catch (error) {
                     console.error('Error parsing WebSocket message:', error);
-                    newEvent(ws, { Event: ERROR, Message: 'Invalid JSON format' });
+                    newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Invalid JSON format' });
                 }
             });
 
@@ -90,7 +69,7 @@ async function startWebSocketServer() {
             /**
              * Envia mensaje de bienvenida
              */
-            newEvent(ws, { Event: WELCOME, Message: 'Connected to WebSocket server' });
+            newEvent(ws, { Event: ResponseEvent.WELCOME, Message: 'Connected to WebSocket server' });
         });
 
         /**
@@ -98,21 +77,21 @@ async function startWebSocketServer() {
          */
         function handleEvent(ws: WebSocket, event: event, clientIp: string | undefined) {
             switch (event.Action) {
-                case AUTH:
+                case ActionEvent.AUTH:
                     handleAuth(ws, event, clientIp);
                     break;
-                case SUBSCRIBE:
+                case ActionEvent.SUBSCRIBE:
                     handleSuscribeChannel(ws, event);
                     break;
-                case SEND:
+                case ActionEvent.SEND:
                     handleMessage(ws, event);
                     break;
-                case PING:
+                case ActionEvent.PING:
                     handlePingMessage(ws);
                     break;
                 default:
                     console.warn('Unknown action:', event.Action);
-                    newEvent(ws, { Event: ERROR, Message: 'Unknown action' });
+                    newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Unknown action' });
             }
         }
 
@@ -145,25 +124,25 @@ async function startWebSocketServer() {
         }
 
         /**
-         * Handle auth event
+         * Maneja eventos de autenticación
          */
         function handleAuth(ws: WebSocket, event: event, clientIp: string | undefined) {
             if (!event.Id || !event.Token) {
                 console.warn(`Authentication failed from ${clientIp}: Missing ServerId or Token`);
-                newEvent(ws, { Event: ERROR, Message: 'Missing Id or Token' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Missing Id or Token' });
                 ws.close();
                 return;
             }
 
             if (event.Token !== AUTH_TOKEN) {
                 console.warn(`Authentication failed from ${clientIp}: Invalid token`);
-                newEvent(ws, { Event: ERROR, Message: 'Invalid authentication token' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Invalid authentication token' });
                 ws.close();
                 return;
             }
 
             if (!event.Id) {
-                newEvent(ws, { Event: ERROR, Message: 'Missing Client ID' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Missing Client ID' });
                 return;
             }
 
@@ -179,66 +158,66 @@ async function startWebSocketServer() {
             authClients.set(event.Id, client);
             console.log(`Conection from ${event.Id} authenticated from ${clientIp}`);
 
-            newEvent(ws, { Event: SUCCESS, Message: 'Authentication successful' });
+            newEvent(ws, { Event: ResponseEvent.SUCCESS, Message: 'Authentication successful' });
 
             connectedClients.add(client);
         }
 
         /**
-         * Handle suscription events
+         * Maneja eventos de subscripción
          */
         function handleSuscribeChannel(ws: WebSocket, event: event) {
 
             const client = Array.from(connectedClients).find(c => c.ws === ws);
 
             if (!client) {
-                newEvent(ws, { Event: ERROR, Message: 'Client not authenticated' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Client not authenticated' });
                 return;
             }
 
             if (!event.Channel) {
-                newEvent(ws, { Event: ERROR, Message: 'Missing Channel' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Missing Channel' });
                 return;
             }
 
             client.channels.add(event.Channel);
 
             /**
-             * Notify other client to channels
+             * Notifica a los clientes en sus canales
              */
             connectedClients.forEach(c => {
                 if (c.channels.has(event.Channel ?? '') && c.ws.readyState === WebSocket.OPEN && c.id !== client.id) {
-                    newEvent(c.ws, { Event: SUBSCRIBED, Message: `Client ${client.id} connected`, Id: client.id });
+                    newEvent(c.ws, { Event: ResponseEvent.SUBSCRIBED, Message: `Client ${client.id} connected`, Id: client.id });
                 }
             });
 
-            newEvent(ws, { Event: SUCCESS, Message: `Subscribed to channel ${event.Channel}` });
+            newEvent(ws, { Event: ResponseEvent.SUCCESS, Message: `Subscribed to channel ${event.Channel}` });
         }
 
         /**
-         * Handle chat events from clients
+         * Maneja los eventos de los clientes conectados
          */
         function handleMessage(ws: WebSocket, event: event) {
             if (!event.Channel) {
-                newEvent(ws, { Event: ERROR, Message: 'Missing Channel' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Missing Channel' });
                 return;
             }
 
             const client = Array.from(connectedClients).find(c => c.ws === ws);
 
             if (!client) {
-                newEvent(ws, { Event: ERROR, Message: 'Client not authenticated' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'Client not authenticated' });
                 return;
             }
 
             if (!client.channels.has(event.Channel)) {
-                newEvent(ws, { Event: ERROR, Message: 'You are not subscribed to this channel' });
+                newEvent(ws, { Event: ResponseEvent.ERROR, Message: 'You are not subscribed to this channel' });
                 return;
             }
 
             connectedClients.forEach(c => {
                 if (c.channels.has(event.Channel ?? '') && c.ws.readyState === WebSocket.OPEN && c.id !== client.id) {
-                    newEvent(c.ws, { Event: EVENT, Message: event.Message, Id: client.id, Sender: event.Sender });
+                    newEvent(c.ws, { Event: ResponseEvent.EVENT, Message: event.Message, Id: client.id, Sender: event.Sender });
                 }
             });
 
@@ -246,9 +225,7 @@ async function startWebSocketServer() {
         }
 
         /**
-         * Handle client disconnections
-         * @param {*} ws 
-         * @param {*} clientIp 
+         * Maneja la desconexión de los clientes
          */
         function handleDisconnect(ws: WebSocket, clientIp: string | undefined) {
 
@@ -265,7 +242,7 @@ async function startWebSocketServer() {
             client.channels.forEach(channel => {
                 connectedClients.forEach(c => {
                     if (c.channels.has(channel) && c.ws.readyState === WebSocket.OPEN && c.id !== client.id) {
-                        newEvent(c.ws, { Event: DISCONNECTED, Message: `Client ${client.id} disconnected`, Id: client.id });
+                        newEvent(c.ws, { Event: ResponseEvent.DISCONNECTED, Message: `Client ${client.id} disconnected`, Id: client.id });
                     }
                 });
             });

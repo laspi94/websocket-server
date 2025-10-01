@@ -11,6 +11,8 @@ class Logger {
      */
     register(event: event) {
         try {
+            if (!event.Message || event.Message.trim() === "" || event.Message.trim() === '""') return;
+
             const now = new Date();
 
             const fecha = now.toISOString().split('T')[0];

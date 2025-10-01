@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { ServerConnection, WebSocketRoutesOptions } from "../types";
 import { LogController, messageController } from "../controllers";
+import { EVENT } from "../servers/websocket";
 
 export function websocketRoutes({ connectedClients, authClients }: WebSocketRoutesOptions) {
     const router = Router();
@@ -28,7 +29,6 @@ export function websocketRoutes({ connectedClients, authClients }: WebSocketRout
 
         connectedClients.forEach((client: ServerConnection) => {
             if (client.channels.has(channel)) {
-                // client.id debe ser string según tu Map authClients
                 const clientId = authClients.has(client.id) ? client.id : client.id;
                 clientsInChannel.push(clientId);
             }
@@ -71,7 +71,17 @@ export function websocketRoutes({ connectedClients, authClients }: WebSocketRout
             return res.status(400).json({ error: "Missing message parameter" });
         }
 
-        const event = { Action: "event", Channel: channel, Message: message };
+        const id = req.query.id as string;
+        if (!id) {
+            return res.status(400).json({ error: "Missing id parameter" });
+        }
+
+        const sender = req.query.sender as string;
+        if (!sender) {
+            return res.status(400).json({ error: "Missing sender parameter" });
+        }
+
+        const event = { Event: EVENT, Message: message, Id: id, Sender: sender };
         let send = 0;
         connectedClients.forEach(client => {
             if (client.channels.has(channel) && client.ws.readyState === 1) {
