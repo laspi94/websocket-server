@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { ServerConnection, WebSocketRoutesOptions } from "../types";
 import { LogController, messageController } from "../controllers";
-import { EVENT } from "../servers/websocket";
+import { ResponseEvent } from "../enums";
 
 export function websocketRoutes({ connectedClients, authClients }: WebSocketRoutesOptions) {
     const router = Router();
@@ -81,7 +81,7 @@ export function websocketRoutes({ connectedClients, authClients }: WebSocketRout
             return res.status(400).json({ error: "Missing sender parameter" });
         }
 
-        const event = { Event: EVENT, Message: message, Id: id, Sender: sender };
+        const event = { Event: ResponseEvent.EVENT, Message: message, Id: id, Sender: sender };
         let send = 0;
         connectedClients.forEach(client => {
             if (client.channels.has(channel) && client.ws.readyState === 1) {
