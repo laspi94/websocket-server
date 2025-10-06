@@ -9,6 +9,14 @@ class AuthController {
     async login(req: Request, res: Response) {
         try {
             const { email, password } = req.body;
+
+            if (!email) {
+                return res.status(400).json({ success: false, message: 'No se recibió el parametro "email"' });
+            }
+            if (!password) {
+                return res.status(400).json({ success: false, message: 'El parametro "password" es requerido' });
+            }
+
             const users = userController.readUsers();
             const user = users.find(u => u.email === email && u.password === password);
 

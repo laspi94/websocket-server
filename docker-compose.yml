@@ -8,8 +8,6 @@ services:
     build:
       context: .
       dockerfile: docker/dockerfile
-    env_file:
-      - .env
     container_name: ${DOCKER_CONTAINER_NAME}
     restart: unless-stopped
     ports:
@@ -21,5 +19,6 @@ services:
     volumes:
       - ./channels:/app/channels
       - ./db:/app/db
+      - ./.env:/app/.env
     networks:
       - wss-network
