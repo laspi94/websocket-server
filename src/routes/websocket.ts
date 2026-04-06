@@ -81,7 +81,8 @@ export function websocketRoutes({ connectedClients, authClients }: WebSocketRout
             return res.status(400).json({ error: "Missing sender parameter" });
         }
 
-        const event = { Event: ResponseEvent.EVENT, Message: message, Id: id, Sender: sender };
+        const event = { Event: ResponseEvent.EVENT, Message: message, Id: id, Sender: sender, Channel: channel };
+
         let send = 0;
         connectedClients.forEach(client => {
             if (client.channels.has(channel) && client.ws.readyState === 1) {

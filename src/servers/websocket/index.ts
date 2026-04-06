@@ -221,6 +221,7 @@ async function startWebSocketServer() {
                 }
             });
 
+            console.log(`[LOG] Registering message - Channel: ${event.Channel}, Message: ${event.Message}, Sender: ${event.Sender}`);
             LogController.register(event)
         }
 
